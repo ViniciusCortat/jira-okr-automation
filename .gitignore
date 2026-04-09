@@ -139,6 +139,10 @@ cython_debug/
 # PROJETO JIRA SPRINT ANALYTICS - ESPECÍFICOS
 # ============================================
 
+#Script de teste
+test.py
+test_*.py
+
 # Dados gerados
 data/
 *.csv

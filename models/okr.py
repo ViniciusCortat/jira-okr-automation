@@ -1,40 +1,27 @@
-from enum import Enum
-from typing import Callable, Any, Optional
+from typing import Callable, Any
 from datetime import datetime
 
-class FrequenciaOKR(Enum):
-    SEMANAL = "semanal"
-
-class JanelaAnalise(Enum):
-    ULTIMOS_7_DIAS = "7d"
-    ULTIMOS_15_DIAS = "15d"
-    ULTIMOS_30_DIAS = "30d"
-    SPRINT_ATUAL = "sprint_atual"
 
 class OKR:
-    def __init__(self, nome: str, janela: JanelaAnalise,
-                 metodo_calculo: Callable, linha_destino: int, coluna_destino: str):
+    def __init__(self, 
+                 nome: str,
+                 metodo_calculo: Callable,
+                 nome_coluna: str,
+                 responsavel: str):
+        
         self.nome = nome
-        self.frequencia = FrequenciaOKR.SEMANAL
-        self.janela = janela
         self.metodo_calculo = metodo_calculo
-        self.linha_destino = linha_destino
-        self.coluna_destino = coluna_destino
-        self.ultimo_valor: Optional[Any] = None
-        self.ultima_execucao: Optional[datetime] = None
+        self.nome_coluna = nome_coluna
+        self.responsavel = responsavel
+        
+        self.ultimo_valor = None
+        self.ultima_execucao = None
     
     def calcular(self) -> Any:
         try:
-            resultado = self.metodo_calculo()
-            self.ultimo_valor = resultado if resultado is not None else 0
+            self.ultimo_valor = self.metodo_calculo()
             self.ultima_execucao = datetime.now()
             return self.ultimo_valor
         except Exception as e:
             print(f"❌ Erro no OKR '{self.nome}': {e}")
-            return 0
-    
-    def deve_executar(self) -> bool:
-        if not self.ultima_execucao:
-            return True
-        dias_desde = (datetime.now() - self.ultima_execucao).days
-        return dias_desde >= 7
+            return 0 if isinstance(self.ultimo_valor, (int, float)) else "0 - 0"

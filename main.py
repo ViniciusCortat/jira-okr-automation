@@ -3,7 +3,7 @@ from core.jira_client import JiraClient
 from services.jql_service import JQLService
 from services.okr_service import OKRService
 from utils.csv_handler import CSVHandler
-from datetime import datetime
+
 
 def main():
     try:
@@ -17,30 +17,18 @@ def main():
         jql_service = JQLService()
         okr_service = OKRService(jql_service)
         
-        # Pega o nome do CICLO (sem sufixos)
-        nome_ciclo = jql_service.get_nome_ciclo()
+        print("\n📊 Executando OKRs...")
         
-        if not nome_ciclo:
-            print("📭 Nenhuma sprint ativa encontrada")
-            return
+        dados_por_responsavel = okr_service.get_dados_por_responsavel()
+        CSVHandler.salvar_todos_csvs(dados_por_responsavel)
         
-        print(f"\n📊 Ciclo: {nome_ciclo}")
-        
-        resultados = okr_service.executar_okrs()
-        
-        print(f"\n📈 OKRs EXECUTADOS HOJE:")
-        for nome, dados in resultados.items():
-            print(f"   • {nome}: {dados['valor']}")
-        
-        metrics = jql_service.get_sprint_metrics_dict()
-        CSVHandler.append_metrics(nome_ciclo, metrics)
-        
-        print(f"\n💾 Dados salvos em: {CSVHandler.CSV_FILE}")
+        print(f"\n💾 CSVs salvos em: {CSVHandler.DATA_DIR}")
         
     except ValueError as e:
         print(f"❌ Erro de configuração: {e}")
     except Exception as e:
         print(f"❌ Erro inesperado: {e}")
+
 
 if __name__ == "__main__":
     main()
